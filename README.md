@@ -33,3 +33,7 @@ mksquashfs dump ${OUTPUT}.squashfs \
 
 mount ${OUTPUT}.squashfs /mnt/tmp
 ```
+
+## Links
+
+- https://www.zeitgeist.se/2017/09/01/linux-way-to-disable-the-virtual-cd-on-wd-disks/
