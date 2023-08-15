@@ -6,8 +6,8 @@ on most Linux systems to collect and process forensic data
 ## Adhoc Commands
 
 ```
-read -rp "Enter Output Name: " OUTPUT
 read -rp "Enter Input Name: " INPUT
+read -rp "Enter Output Name: " OUTPUT
 
 cat ${OUTPUT} | \
   tee \
@@ -19,7 +19,17 @@ cat ${OUTPUT} | \
 mksquashfs dump ${OUTPUT}.squashfs -all-root -noappend
 
 # make squashfs w/ dd
-mksquashfs dump ${OUTPUT}.squashfs -all-root -noappend -p "${OUTPUT} f 400 root root dd if=${DEVICE} bs=1M"
+mksquashfs dump ${OUTPUT}.squashfs \
+  -all-root \
+  -noappend \
+  -p "${OUTPUT}.raw f 400 root root dd bs=4096 conv=noerror,sync if=${INPUT}"
+
+# convert gzip image to squashfs
+mksquashfs dump ${OUTPUT}.squashfs \
+  -all-root \
+  -noappend \
+  -p "${OUTPUT}.raw f 400 root root gunzip -c ${INPUT}"
+
 
 mount ${OUTPUT}.squashfs /mnt/tmp
 ```
