@@ -53,8 +53,6 @@ Example
 
 ```
 mkdir scratch
-sudo smartctl -x /dev/sda > scratch/hdinfo.txt
-sudo sfdisk -d /dev/sda > scratch/sfdisk.txt
 
 OUTPUT=backup
 
@@ -62,10 +60,26 @@ for PART in /dev/sda?
 do
   mksquashfs scratch ${OUTPUT}.squashfs \
     -comp zstd \
-    -no-duplicates \
+    -no-xattrs \
     -all-root \
     -p "$(basename ${PART}).raw f 400 root root sudo dd bs=4096 conv=noerror,sync if=${PART}"
 done
+
+for PART in /dev/sda?
+do
+  sudo dd bs=4096 conv=noerror,sync if=${PART} | \
+  tee \
+  >(md5sum > scratch/$(basename ${PART}).md5sum) \
+  >(sha256sum > scratch/$(basename ${PART}).sha256sum) \
+  | sha1sum > scratch/$(basename ${PART}).sha1sum
+done
+
+sudo smartctl -x /dev/sda > scratch/hdinfo.txt
+sudo sfdisk -d /dev/sda > scratch/sfdisk.txt
+
+mksquashfs scratch ${OUTPUT}.squashfs \
+  -no-xattrs \
+  -all-root
 
 ```
 
