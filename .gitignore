@@ -1,6 +1,7 @@
 # additional
 dump/
 scratch/
+empty/
 *.squashfs
 
 # Byte-compiled / optimized / DLL files
